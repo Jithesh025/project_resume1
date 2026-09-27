@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Resume Builder</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI,Arial,sans-serif;
+}
+
+body{
+    background:#eef2f7;
+    padding:20px;
+    height:100vh;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#fff;
+    padding:15px 25px;
+    border-radius:10px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    margin-bottom:20px;
+}
+
+.header h2{
+    color:#1d3557;
+}
+
+.button-group{
+    display:flex;
+    gap:12px;
+}
+
+.download-btn{
+    border:none;
+    color:white;
+    padding:12px 22px;
+    font-size:15px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.pdf-btn{
+    background:#28a745;
+}
+
+.doc-btn{
+    background:#0d6efd;
+}
+
+.download-btn:hover{
+    opacity:.9;
+}
+
+.container{
+    display:grid;
+    grid-template-columns:65% 35%;
+    gap:20px;
+    height:calc(100vh - 100px);
+}
+
+/* Resume Sheet */
+
+.resume-container{
+    background:white;
+    border-radius:10px;
+    padding:40px;
+    overflow-y:auto;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+
+.resume-container::-webkit-scrollbar{
+    width:8px;
+}
+
+.resume-container::-webkit-scrollbar-thumb{
+    background:#ccc;
+}
+
+[contenteditable=true]{
+    outline:none;
+    transition:.2s;
+    padding:3px;
+}
+
+[contenteditable=true]:hover{
+    background:#f1f5f9;
+}
+
+[contenteditable=true]:focus{
+    background:#e7f1ff;
+    border-left:3px solid #0d6efd;
+}
+
+h1{
+    color:#1d3557;
+    text-align:center;
+}
+
+.contact{
+    text-align:center;
+    color:#555;
+    margin-top:8px;
+    padding-bottom:10px;
+    border-bottom:2px solid #1d3557;
+}
+
+.section-title{
+    margin-top:25px;
+    margin-bottom:8px;
+    color:#1d3557;
+    font-size:17px;
+    font-weight:bold;
+    border-bottom:1px solid #ccc;
+    padding-bottom:4px;
+}
+
+.resume-content{
+    font-size:15px;
+    color:#333;
+    line-height:1.7;
+}
+
+.resume-content ul{
+    padding-left:20px;
+}
+
+@media(max-width:900px){
+
+.container{
+    grid-template-columns:1fr;
+}
+
+.button-group{
+    flex-direction:column;
+}
+
+.header{
+    flex-direction:column;
+    gap:15px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<h2>AI Resume Builder</h2>
+
+<div class="button-group">
+
+<button class="download-btn pdf-btn"
+onclick="downloadPDF()">
+Download PDF
+</button>
+
+<button class="download-btn doc-btn"
+onclick="downloadDOCX()">
+Download Word (.docx)
+</button>
+
+</div>
+
+</div>
+
+<div class="container">
+
+<!-- Resume Editor -->
+
+<div class="resume-container" id="resumeSheet">
+
+<h1 contenteditable="true"
+id="resume-name">
+
+YOUR NAME
+
+</h1>
+
+<div
+class="contact"
+contenteditable="true"
+id="resume-contact">
+
+your.email@gmail.com |
++91 9876543210 |
+Bangalore, India
+
+</div>
+
+<div class="section-title">
+
+Professional Summary
+
+</div>
+
+<div
+class="resume-content"
+contenteditable="true"
+id="resume-summary">
+
+Write a short professional summary here.
+
+</div>
+
+<div class="section-title">
+
+Education
+
+</div>
+
+<div
+class="resume-content"
+contenteditable="true"
+id="resume-education">
+
+B.E Computer Science
+XYZ College
+2022 - 2026
+
+</div>
+
+<div class="section-title">
+
+Technical Skills
+
+</div>
+
+<div
+class="resume-content"
+contenteditable="true"
+id="resume-tech-skills">
+
+Python<br>
+Flask<br>
+HTML<br>
+CSS<br>
+Bootstrap<br>
+JavaScript<br>
+SQL
+
+</div>
+
+<div class="section-title">
+
+Projects
+
+</div>
+
+<div
+class="resume-content"
+contenteditable="true"
+id="resume-projects">
+
+<b>AI Resume Builder</b>
+
+<ul>
+
+<li>Developed an AI-powered resume builder using Flask and Gemini API.</li>
+
+<li>Implemented live editing with real-time AI suggestions.</li>
+
+<li>Added PDF and Word resume export functionality.</li>
+
+</ul>
+
+</div>
+<!-- Certifications -->
+
+<div class="section-title">
+    Certifications
+</div>
+
+<div
+class="resume-content"
+contenteditable="true"
+id="resume-certifications">
+
+Python Programming Certification
+
+</div>
+
+<!-- Add section button on LEFT resume side -->
+<div class="left-add-section-wrapper">
+
+    <button
+        type="button"
+        class="left-add-section-btn"
+        onclick="openAddSection()"
+        title="Add Resume Section">
+        <span>+</span>
+        Add Section
+    </button>
+
+</div>
+
+
+</div>
+
+
+<!-- ========================= -->
+<!-- Add Resume Section Modal -->
+<!-- ========================= -->
+
+<div class="add-section-modal" id="addSectionModal">
+
+    <div class="add-section-box">
+
+        <h3>Add Resume Section</h3>
+
+        <p>
+            Choose a section to add to your resume.
+            It will also be added to the Gemini AI dropdown.
+        </p>
+
+        <select id="newSectionSelect">
+
+            <option value="experience">Professional Experience</option>
+            <option value="internships">Internships</option>
+            <option value="achievements">Achievements</option>
+            <option value="awards">Awards</option>
+            <option value="languages">Languages</option>
+            <option value="interests">Interests</option>
+            <option value="strengths">Strengths</option>
+            <option value="objective">Career Objective</option>
+            <option value="publications">Publications</option>
+            <option value="volunteering">Volunteer Experience</option>
+            <option value="references">References</option>
+
+        </select>
+
+        <div class="modal-buttons">
+
+            <button
+                type="button"
+                class="modal-btn cancel-section-btn"
+                onclick="closeAddSection()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="modal-btn confirm-section-btn"
+                onclick="addSelectedSection()">
+                Add Section
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ========================= -->
+<!-- AI Assistant Panel -->
+<!-- ========================= -->
+
+<div class="ai-panel">
+
+<h3>🤖 Gemini AI Resume Assistant</h3>
+
+<p class="info">
+Select a section, describe your experience, and Gemini will generate
+professional ATS-friendly content.
+</p>
+
+<label><b>Select Resume Section</b></label>
+
+<div class="section-select-row">
+
+<select id="targetSection">
+
+<option value="Professional Summary">
+Professional Summary
+</option>
+
+<option value="Education">
+Education
+</option>
+
+<option value="Technical Skills">
+Technical Skills
+</option>
+
+<option value="Projects">
+Projects
+</option>
+
+<option value="Certifications">
+Certifications
+</option>
+
+</select>
+
+</div>
+
+<div id="chatBox" class="chat-box">
+
+<div class="bot-msg">
+
+<b>Gemini</b><br>
+
+Hello 👋
+
+Tell me about your project, skills or education.
+
+I'll convert it into a professional resume description.
+
+</div>
+
+</div>
+<div class="input-area">
+
+<textarea
+id="aiInput"
+placeholder="Speak or type your prompt..."
+></textarea>
+
+<button
+class="ask-btn"
+onclick="startListening()">
+
+🎤 Speak
+
+</button>
+
+<button
+class="ask-btn"
+onclick="askGemini()">
+
+Ask AI
+
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
+<style>
+
+.ai-panel{
+
+background:#fff;
+padding:20px;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,.08);
+
+display:flex;
+flex-direction:column;
+
+}
+
+.ai-panel h3{
+
+color:#1d3557;
+margin-bottom:10px;
+
+}
+
+.info{
+
+font-size:13px;
+color:#666;
+margin-bottom:15px;
+
+}
+
+.ai-panel select{
+
+padding:10px;
+margin:10px 0 15px;
+border-radius:6px;
+border:1px solid #ccc;
+
+}
+
+.chat-box{
+
+flex:1;
+
+background:#f7f9fc;
+
+border:1px solid #ddd;
+
+border-radius:8px;
+
+padding:15px;
+
+overflow-y:auto;
+
+min-height:320px;
+
+max-height:420px;
+
+}
+
+.user-msg{
+
+background:#0d6efd;
+
+color:white;
+
+padding:10px;
+
+border-radius:8px;
+
+margin:10px 0;
+
+margin-left:50px;
+
+}
+
+.bot-msg{
+
+background:#e9ecef;
+
+padding:10px;
+
+border-radius:8px;
+
+margin:10px 0;
+
+margin-right:50px;
+
+}
+
+.copy-btn{
+
+margin-top:8px;
+
+background:#20c997;
+
+color:white;
+
+border:none;
+
+padding:5px 10px;
+
+border-radius:5px;
+
+cursor:pointer;
+
+font-size:12px;
+
+}
+
+.input-area{
+
+margin-top:15px;
+
+display:flex;
+
+gap:10px;
+
+}
+
+.input-area textarea{
+
+flex:1;
+
+height:80px;
+
+padding:10px;
+
+border-radius:6px;
+
+border:1px solid #ccc;
+
+resize:none;
+
+}
+
+.ask-btn{
+
+width:120px;
+
+background:#0d6efd;
+
+color:white;
+
+border:none;
+
+border-radius:6px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+.ask-btn:hover{
+
+background:#0b5ed7;
+
+}
+
+@media(max-width:900px){
+
+.ai-panel{
+
+margin-top:20px;
+
+}
+
+.chat-box{
+
+min-height:250px;
+
+}
+
+.input-area{
+
+flex-direction:column;
+
+}
+
+.ask-btn{
+
+width:100%;
+
+}
+
+}
+
+
+/* ===========================
+   Add Resume Section UI
+   =========================== */
+
+.section-select-row{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+.section-select-row select{
+    flex:1;
+}
+
+.add-section-btn{
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:6px;
+    background:#0d6efd;
+    color:white;
+    font-size:25px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.add-section-btn:hover{
+    background:#0b5ed7;
+    transform:scale(1.04);
+}
+
+.add-section-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+}
+
+.add-section-modal.show{
+    display:flex;
+}
+
+.add-section-box{
+    width:420px;
+    max-width:90%;
+    background:white;
+    border-radius:12px;
+    padding:25px;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+.add-section-box h3{
+    color:#1d3557;
+    margin-bottom:8px;
+}
+
+.add-section-box p{
+    color:#666;
+    font-size:13px;
+    margin-bottom:15px;
+}
+
+.add-section-box select{
+    width:100%;
+    padding:11px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    margin-bottom:18px;
+    font-size:14px;
+}
+
+.modal-buttons{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+}
+
+.modal-btn{
+    border:none;
+    padding:10px 18px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.cancel-section-btn{
+    background:#e9ecef;
+    color:#333;
+}
+
+.confirm-section-btn{
+    background:#0d6efd;
+    color:white;
+}
+
+.confirm-section-btn:hover{
+    background:#0b5ed7;
+}
+
+
+/* ===========================
+   LEFT SIDE ADD SECTION BUTTON
+   =========================== */
+
+.left-add-section-wrapper{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:25px 0 10px;
+    padding:10px 0;
+}
+
+.left-add-section-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    min-width:150px;
+    padding:11px 20px;
+    border:2px dashed #0d6efd;
+    border-radius:8px;
+    background:#f8fbff;
+    color:#0d6efd;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .2s ease;
+}
+
+.left-add-section-btn span{
+    font-size:22px;
+    line-height:16px;
+    font-weight:bold;
+}
+
+.left-add-section-btn:hover{
+    background:#0d6efd;
+    color:white;
+    transform:translateY(-1px);
+    box-shadow:0 4px 10px rgba(13,110,253,.2);
+}
+
+/* Keep the popup styles */
+
+</style>
+<script>
+
+let replyCounter = 0;
+const SpeechRecognition =
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+const recognition =
+new SpeechRecognition();
+
+recognition.lang = "en-US";
+
+recognition.interimResults = false;
+
+recognition.maxAlternatives = 1;
+
+function startListening(){
+
+recognition.start();
+
+recognition.onstart = function(){
+
+console.log("Listening...");
+
+};
+
+recognition.onresult = function(event){
+
+const text =
+event.results[0][0].transcript;
+
+document.getElementById("aiInput").value = text;
+
+};
+
+recognition.onerror = function(event){
+
+alert("Voice Error: " + event.error);
+
+};
+
+}
+
+/* ===========================
+   Gemini AI Chat
+=========================== */
+
+function askGemini(){
+
+    const input = document.getElementById("aiInput");
+    const chatBox = document.getElementById("chatBox");
+    const section = document.getElementById("targetSection");
+
+    const message = input.value.trim();
+
+    if(message===""){
+        alert("Please enter some text.");
+        return;
+    }
+
+    chatBox.innerHTML += `
+    <div class="user-msg">
+        <b>You (${section.value})</b><br>
+        ${message}
+    </div>`;
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    fetch("/chat",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            message:message,
+            section:section.value
+
+        })
+
+    })
+
+    .then(response=>response.json())
+
+    .then(data=>{
+
+        replyCounter++;
+
+        chatBox.innerHTML += `
+
+        <div class="bot-msg">
+
+            <b>Gemini</b><br>
+
+            <div id="reply${replyCounter}">
+                ${data.response}
+            </div>
+
+            <button
+                class="copy-btn"
+                onclick="copySuggestion(${replyCounter})">
+
+                Copy
+
+            </button>
+
+        </div>
+
+        `;
+        speak(data.response);
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+    })
+
+    .catch(error=>{
+
+        chatBox.innerHTML+=`
+        <div class="bot-msg">
+
+            Failed to contact AI.
+
+        </div>`;
+
+    });
+
+    input.value="";
+
+}
+
+/* ===========================
+   Copy Suggestion
+=========================== */
+
+function copySuggestion(id){
+
+    const text=document.getElementById("reply"+id).innerText;
+
+    navigator.clipboard.writeText(text);
+
+    alert("Copied to Clipboard.");
+
+}
+
+function speak(text){
+
+const speech =
+new SpeechSynthesisUtterance(text);
+
+speech.lang = "en-US";
+
+speech.rate = 1;
+
+speech.pitch = 1;
+
+window.speechSynthesis.speak(speech);
+
+}
+
+/* ===========================
+   Resume Data
+=========================== */
+
+
+/* ===========================
+   Dynamic Resume Sections
+   =========================== */
+
+const availableSections = {
+    experience: "Professional Experience",
+    internships: "Internships",
+    achievements: "Achievements",
+    awards: "Awards",
+    languages: "Languages",
+    interests: "Interests",
+    strengths: "Strengths",
+    objective: "Career Objective",
+    publications: "Publications",
+    volunteering: "Volunteer Experience",
+    references: "References"
+};
+
+function openAddSection(){
+
+    updateAvailableSectionOptions();
+
+    document
+        .getElementById("addSectionModal")
+        .classList.add("show");
+}
+
+function closeAddSection(){
+
+    document
+        .getElementById("addSectionModal")
+        .classList.remove("show");
+}
+
+function updateAvailableSectionOptions(){
+
+    const select =
+        document.getElementById("newSectionSelect");
+
+    const target =
+        document.getElementById("targetSection");
+
+    const existing =
+        Array.from(target.options).map(option => option.value);
+
+    Array.from(select.options).forEach(option => {
+
+        option.disabled =
+            existing.includes(availableSections[option.value]);
+
+    });
+
+    const firstAvailable =
+        Array.from(select.options)
+        .find(option => !option.disabled);
+
+    if(firstAvailable){
+        select.value = firstAvailable.value;
+    }
+}
+
+function addSelectedSection(){
+
+    const newSelect =
+        document.getElementById("newSectionSelect");
+
+    const key = newSelect.value;
+    const title = availableSections[key];
+
+    const target =
+        document.getElementById("targetSection");
+
+    if(
+        Array.from(target.options)
+        .some(option => option.value === title)
+    ){
+        alert(title + " is already added.");
+        return;
+    }
+
+    // Add the new section to Gemini's dropdown.
+    const option = document.createElement("option");
+
+    option.value = title;
+    option.textContent = title;
+
+    target.appendChild(option);
+    target.value = title;
+
+    // Add the new editable section to the resume.
+    const resumeSheet =
+        document.getElementById("resumeSheet");
+
+    const section =
+        document.createElement("div");
+
+    section.className = "dynamic-section";
+    section.id = "resume-" + key;
+
+    section.innerHTML = `
+        <div class="section-title">
+            ${title}
+        </div>
+
+        <div
+            class="resume-content"
+            contenteditable="true"
+            id="resume-${key}-content"
+        >
+            Enter ${title.toLowerCase()} here.
+        </div>
+    `;
+
+    resumeSheet.appendChild(section);
+
+    closeAddSection();
+
+    section.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}
+
+// Close the popup when clicking outside it.
+document.addEventListener("click", function(event){
+
+    const modal =
+        document.getElementById("addSectionModal");
+
+    if(event.target === modal){
+        closeAddSection();
+    }
+
+});
+
+
+function getResumeData() {
+
+    const contact =
+        document.getElementById("resume-contact").innerText;
+
+    const parts =
+        contact.split("|").map(item => item.trim());
+
+    const data = {
+
+        name:
+            document.getElementById("resume-name").innerText,
+
+        email:
+            parts[0] || "",
+
+        phone:
+            parts[1] || "",
+
+        address:
+            parts[2] || "",
+
+        summary:
+            document.getElementById("resume-summary").innerText,
+
+        education:
+            document.getElementById("resume-education").innerText,
+
+        skills:
+            document.getElementById("resume-tech-skills").innerText,
+
+        experience:
+            "",
+
+        projects:
+            document.getElementById("resume-projects").innerText,
+
+        certifications:
+            document.getElementById("resume-certifications").innerText
+    };
+
+    // Include every section added with the + button.
+    Object.keys(availableSections).forEach(key => {
+
+        const content =
+            document.getElementById(
+                "resume-" + key + "-content"
+            );
+
+        if(content){
+            data[key] = content.innerText.trim();
+        }
+
+    });
+
+    return data;
+}
+
+/* ===========================
+   Download PDF
+=========================== */
+
+function downloadPDF(){
+
+    fetch("/download/pdf",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify(getResumeData())
+
+    })
+
+    .then(response=>{
+
+        if(!response.ok){
+
+            throw new Error("Unable to generate PDF.");
+
+        }
+
+        return response.blob();
+
+    })
+
+    .then(blob=>{
+
+        const url=window.URL.createObjectURL(blob);
+
+        const a=document.createElement("a");
+
+        a.href=url;
+
+        a.download="Resume.pdf";
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+    })
+
+    .catch(error=>{
+
+        alert(error);
+
+    });
+
+}
+
+/* ===========================
+   Download DOCX
+=========================== */
+
+function downloadDOCX(){
+
+    fetch("/download/docx",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify(getResumeData())
+
+    })
+
+    .then(response=>{
+
+        if(!response.ok){
+
+            throw new Error("Unable to generate DOCX.");
+
+        }
+
+        return response.blob();
+
+    })
+
+    .then(blob=>{
+
+        const url=window.URL.createObjectURL(blob);
+
+        const a=document.createElement("a");
+
+        a.href=url;
+
+        a.download="Resume.docx";
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+    })
+
+    .catch(error=>{
+
+        alert(error);
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>

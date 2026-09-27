@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Share Your Experience</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background: #f5f7fb;
+
+            font-family: Arial, sans-serif;
+        }
+
+
+        .feedback-container {
+
+            width: 100%;
+            max-width: 500px;
+
+            padding: 30px;
+
+            background: white;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.10);
+        }
+
+
+        .feedback-container h2 {
+
+            text-align: center;
+
+            color: #333;
+
+            margin-bottom: 20px;
+        }
+
+
+        .form-group {
+
+            margin-bottom: 20px;
+        }
+
+
+        .form-group label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-weight: bold;
+
+            color: #444;
+        }
+
+
+        textarea {
+
+            width: 100%;
+
+            min-height: 120px;
+
+            padding: 12px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            font-family: Arial, sans-serif;
+
+            resize: vertical;
+        }
+
+
+        textarea:focus {
+
+            outline: none;
+
+            border-color: #1c27ee;
+        }
+
+
+        /* STAR RATING */
+
+        .star-rating {
+
+            display: flex;
+
+            flex-direction: row-reverse;
+
+            justify-content: flex-end;
+
+            gap: 5px;
+        }
+
+
+        .star-rating input {
+
+            display: none;
+        }
+
+
+        .star-rating label {
+
+            font-size: 30px;
+
+            color: #ccc;
+
+            cursor: pointer;
+
+            margin: 0;
+
+            transition: color 0.2s;
+        }
+
+
+        .star-rating label:hover,
+
+        .star-rating label:hover ~ label,
+
+        .star-rating input:checked ~ label {
+
+            color: #ffc107;
+        }
+
+
+        /* SUBMIT BUTTON */
+
+        .btn-submit {
+
+            width: 100%;
+
+            background: #1c27ee;
+
+            color: white;
+
+            border: none;
+
+            padding: 12px;
+
+            font-size: 14px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+        }
+
+
+        .btn-submit:hover {
+
+            background: #0d6efd;
+        }
+
+
+        .btn-submit:disabled {
+
+            background: #888;
+
+            cursor: not-allowed;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="feedback-container">
+
+        <h2>Share Your Experience</h2>
+
+
+        <form id="feedbackForm">
+
+
+            <!-- EXPERIENCE -->
+
+            <div class="form-group">
+
+                <label for="userExperience">
+                    Your Experience
+                </label>
+
+
+                <textarea
+                    id="userExperience"
+                    name="experience"
+                    rows="5"
+                    placeholder="Tell us about your experience using the AI Resume Builder..."
+                    required></textarea>
+
+            </div>
+
+
+            <!-- RATING -->
+
+            <div class="form-group">
+
+                <label>
+                    Overall Rating
+                </label>
+
+
+                <div class="star-rating">
+
+
+                    <input
+                        type="radio"
+                        id="star5"
+                        name="rating"
+                        value="5">
+
+                    <label
+                        for="star5"
+                        title="5 stars">
+                        ★
+                    </label>
+
+
+                    <input
+                        type="radio"
+                        id="star4"
+                        name="rating"
+                        value="4">
+
+                    <label
+                        for="star4"
+                        title="4 stars">
+                        ★
+                    </label>
+
+
+                    <input
+                        type="radio"
+                        id="star3"
+                        name="rating"
+                        value="3">
+
+                    <label
+                        for="star3"
+                        title="3 stars">
+                        ★
+                    </label>
+
+
+                    <input
+                        type="radio"
+                        id="star2"
+                        name="rating"
+                        value="2">
+
+                    <label
+                        for="star2"
+                        title="2 stars">
+                        ★
+                    </label>
+
+
+                    <input
+                        type="radio"
+                        id="star1"
+                        name="rating"
+                        value="1">
+
+                    <label
+                        for="star1"
+                        title="1 star">
+                        ★
+                    </label>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- SUBMIT BUTTON -->
+
+            <button
+                type="submit"
+                class="btn-submit"
+                id="submitButton">
+
+                Submit Feedback
+
+            </button>
+
+
+        </form>
+
+    </div>
+
+
+    <!-- FIREBASE -->
+
+    <script type="module">
+
+const { auth, db } =
+    await import("/static/js/firebase-config.js");
+
+const {
+    collection,
+    addDoc,
+    serverTimestamp
+} =
+    await import(
+        "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js"
+    );
+
+
+document.getElementById("feedbackForm").addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    // Get feedback text
+    const experience =
+        document.getElementById("userExperience").value.trim();
+
+    // Get selected rating
+    const ratingElement =
+        document.querySelector('input[name="rating"]:checked');
+
+    const rating =
+        ratingElement ? ratingElement.value : "";
+
+    // Check login
+    const user = auth.currentUser;
+
+    if (!user) {
+        alert("Please login before submitting feedback.");
+        return;
+    }
+
+    // Check fields
+    if (!experience || !rating) {
+        alert("Please enter your feedback and select a rating.");
+        return;
+    }
+
+    try {
+
+        // Save feedback to Firestore
+        await addDoc(
+            collection(db, "feedback"),
+            {
+                userId: user.uid,
+                email: user.email || "",
+                experience: experience,
+                rating: rating,
+                createdAt: serverTimestamp()
+            }
+        );
+
+        alert("Feedback submitted successfully!");
+
+        document.getElementById("feedbackForm").reset();
+
+    } catch (error) {
+
+        console.error("Feedback error:", error);
+
+        alert("Failed to submit feedback: " + error.message);
+    }
+
+});
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+s
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Register | AI Resume Builder</title>
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='css/register.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="register-box">
+
+<h1>AI Resume Builder</h1>
+
+<h2>Create Account</h2>
+
+<form id="registerForm">
+
+<input type="text"
+id="name"
+placeholder="Full Name"
+required>
+
+<input type="email"
+id="email"
+placeholder="Email Address"
+required>
+
+<input type="password"
+id="password"
+placeholder="Password"
+required>
+
+<input type="password"
+id="confirmPassword"
+placeholder="Confirm Password"
+required>
+
+<button type="submit">
+
+Create Account
+
+</button>
+
+</form>
+
+<p>
+
+Already have an account?
+
+<a href="{{ url_for('login') }}">
+
+Login
+
+</a>
+
+</p>
+
+</div>
+
+</div>
+
+<script type="module"
+src="{{ url_for('static', filename='js/register.js') }}"></script>
+
+</body>
+</html>

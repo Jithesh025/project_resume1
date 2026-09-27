@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+    <title>Resumefy - Technical Editor</title>
+    
+    <style>
+        /* =========================================
+           APP LAYOUT (Top Bar + Split Screen)
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #eef2f7;
+            height: 100vh;
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            height: 70px;
+            flex-shrink: 0;
+        }
+
+        .topbar h1 { color: #1a2a40; font-size: 22px; }
+        .header-buttons { display: flex; gap: 15px; }
+
+        .layout-container {
+            display: grid;
+            grid-template-columns: 65% 35%;
+            gap: 20px;
+            flex-grow: 1;
+            padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+            height: calc(100vh - 70px);
+        }
+
+        /* =========================================
+           LEFT SIDE: RESUME CANVAS (Benjamin Shah Layout)
+           ========================================= */
+        .resume-area {
+            background: #f4f4f5;
+            border-radius: 12px;
+            padding: 40px 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .resume {
+            background: #ffffff;
+            width: 100%;
+            max-width: 800px;
+            padding: 50px 60px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            color: #333;
+            flex-shrink: 0;
+        }
+
+        .resume [contenteditable="true"] {
+            outline: none;
+            transition: background 0.2s;
+            border-radius: 2px;
+            padding: 2px;
+        }
+        .resume [contenteditable="true"]:hover { background: #f0f4f8; }
+        .resume [contenteditable="true"]:focus { background: #e2e8f0; box-shadow: -2px 0 0 0 #1e3a8a; }
+
+        /* Header block */
+        .resume-header-bs {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 25px;
+            align-items: flex-start;
+        }
+        
+        .resume-photo-bs {
+            width: 110px;
+            height: 130px;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+
+        .resume-info-bs {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 10px;
+        }
+
+        .resume-name-bs {
+            font-size: 30px;
+            font-weight: 800;
+            color: #1e3a8a; /* Dark Blue */
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .contact-grid-bs {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            column-gap: 15px;
+            row-gap: 4px;
+            font-size: 13.5px;
+            color: #333;
+        }
+        .contact-label { font-weight: 700; color: #111; }
+
+        /* Section Headings */
+        .section-heading-bs {
+            font-size: 15.5px;
+            font-weight: 800;
+            color: #1e3a8a;
+            text-transform: uppercase;
+            border-bottom: 1.5px solid #a1a1aa;
+            padding-bottom: 3px;
+            margin-bottom: 12px;
+            margin-top: 25px;
+        }
+
+        /* Body Text & Entries */
+        .resume-text-bs { font-size: 13.5px; line-height: 1.6; color: #333; text-align: justify; }
+
+        .entry-header-bs { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; color: #111; margin-bottom: 2px; }
+        .entry-sub-bs { font-size: 13.5px; color: #333; margin-bottom: 5px; }
+        .entry-bullets-bs { padding-left: 20px; font-size: 13.5px; color: #333; line-height: 1.5; margin-bottom: 15px; }
+        .entry-bullets-bs li { margin-bottom: 4px; }
+
+        /* =========================================
+           RIGHT SIDE: AI CHATBOT PANEL
+           ========================================= */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .action-card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+        }
+
+        .action-card h3 { color: #1a2a40; font-size: 18px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;}
+
+        /* Button Styling */
+        .btn { border: none; padding: 12px 20px; border-radius: 6px; font-weight: 600; color: white; cursor: pointer; transition: 0.2s; text-align: center; }
+        .btn-pdf { background: #28a745; }
+        .btn-pdf:hover { background: #218838; }
+        .btn-word { background: #0d6efd; }
+        .btn-word:hover { background: #0b5ed7; }
+        .btn-use { background: #6c757d; }
+        .btn-use:hover { background: #5c636a; }
+        
+        .ai-chat-box { flex-grow: 1; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; overflow-y: auto; min-height: 250px; margin-bottom: 10px; }
+        .chat-msg { padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; line-height: 1.5; }
+        .bot-msg { background: #e9ecef; color: #333; margin-right: 20px; }
+        .user-msg { background: #0d6efd; color: white; margin-left: 20px; }
+
+        .form-select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 10px; font-size: 14px; }
+        .form-textarea { width: 100%; height: 90px; padding: 12px; border: 1px solid #ccc; border-radius: 6px; resize: none; margin-bottom: 10px; font-size: 14px; }
+        .ai-button-group { display: flex; gap: 8px; }
+        .ai-button-group .btn { flex-grow: 1; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-card { background: white; padding: 25px; border-radius: 12px; width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .add-section-btn { background: transparent; border: 2px dashed #0d6efd; color: #0d6efd; padding: 12px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 15px; }
+        .add-section-btn:hover { background: #f0f4f8; }
+
+        @media (max-width: 1000px) {
+            .layout-container { grid-template-columns: 1fr; height: auto; overflow: visible; }
+            body { overflow: auto; }
+            .resume-area { order: 2; }
+            .right-panel { order: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP HEADER -->
+    <header class="topbar">
+        <h1>AI Resume Builder</h1>
+        <div class="header-buttons">
+            <button class="btn btn-pdf" onclick="downloadResume('/download/resume2_professional_pdf')">Download PDF</button>
+            <button class="btn btn-word" onclick="downloadResume('/download/resume2_professional_docx')">Download Word (.docx)</button>
+        </div>
+    </header>
+
+    <div class="layout-container">
+        
+        <!-- =========================================
+             LEFT SIDE: RESUME EDITOR
+             ========================================= -->
+        <div class="resume-area">
+            <div class="resume" id="resume">
+                
+                <!-- HEADER (Photo + Info) -->
+                <div class="resume-header-bs">
+                    <!-- Photo logic -->
+                    <img src="" id="profilePhoto" class="resume-photo-bs" style="display:none;" onclick="document.getElementById('photoInput').click()">
+                    <div id="photoPlaceholder" class="resume-photo-bs" onclick="document.getElementById('photoInput').click()">+ PHOTO</div>
+                    <input type="file" id="photoInput" style="display:none;" accept="image/*" onchange="changePhoto(event)">
+
+                    <div class="resume-info-bs">
+                        <div class="resume-name-bs" contenteditable="true" id="name">BENJAMIN SHAH</div>
+                        <div class="contact-grid-bs">
+                            <span class="contact-label">Address:</span> <span contenteditable="true" id="address">123 Anywhere St., Any City</span>
+                            <span class="contact-label">Phone:</span> <span contenteditable="true" id="phone">123-456-7890</span>
+                            <span class="contact-label">Email:</span> <span contenteditable="true" id="email">hello@reallygreatsite.com</span>
+                            <span class="contact-label">Website:</span> <span contenteditable="true" id="linkedin">www.reallygreatsite.com</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden elements to make sure JS payload is sent to Python correctly -->
+                <div style="display:none;" id="jobTitle"></div>
+                <div style="display:none;" id="certifications"></div>
+
+                <!-- SUMMARY -->
+                <div class="section-heading-bs" contenteditable="true">SUMMARY</div>
+                <div class="resume-text-bs" contenteditable="true" id="summary">
+                    Results-oriented Mechanical and Mechatronics Engineer seeking a challenging position to apply expertise in designing and implementing innovative solutions for complex engineering challenges. Proven track record of success in project management, problem-solving, and cross-functional collaboration.
+                </div>
+
+                <!-- EXPERIENCE -->
+                <div class="section-heading-bs" contenteditable="true">WORK EXPERIENCE</div>
+                <div id="experience" contenteditable="true">
+                    <div class="entry-header-bs">
+                        <span>Mechatronics Engineer, Borcelle Technologies</span>
+                        <span>Jan 2023 - Present</span>
+                    </div>
+                    <ul class="entry-bullets-bs">
+                        <li>Led development of an advanced automation system, achieving a 15% increase in operational efficiency.</li>
+                        <li>Streamlined manufacturing processes, reducing production costs by 10%.</li>
+                    </ul>
+                    
+                    <div class="entry-header-bs">
+                        <span>System Engineer, Arrowai Industries</span>
+                        <span>Feb 2021 - Dec 2022</span>
+                    </div>
+                    <ul class="entry-bullets-bs">
+                        <li>Designed and optimised a robotic control system, realizing a 12% performance improvement.</li>
+                        <li>Coordinated testing and validation, ensuring compliance with industry standards.</li>
+                    </ul>
+                </div>
+
+                <!-- EDUCATION -->
+                <div class="section-heading-bs" contenteditable="true">EDUCATION</div>
+                <div id="education" contenteditable="true">
+                    <div class="entry-header-bs">
+                        <span>Bachelor of Mechatronics Engineering with Honours</span>
+                        <span>Aug 2016 - Oct 2019</span>
+                    </div>
+                    <div class="entry-sub-bs">University of Engineering Excellence</div>
+                    <ul class="entry-bullets-bs">
+                        <li>Major in Automotive Technology.</li>
+                        <li>Thesis on "Technological Advancements within the current Mechatronics Industry".</li>
+                    </ul>
+                </div>
+
+                <!-- ADDITIONAL INFO -->
+                <div class="section-heading-bs" contenteditable="true">ADDITIONAL INFORMATION</div>
+                <ul class="entry-bullets-bs" contenteditable="true" id="skills">
+                    <li><b>Technical Skills:</b> Mechatronics System Integration, Automotive Engineering, Project Management, Robotics and Automation, CAD.</li>
+                    <li><b>Languages:</b> English, Malay, Japan.</li>
+                    <li><b>Certifications:</b> Professional Engineer (PE) License, Project Management Professional (PMP).</li>
+                    <li><b>Awards/Activities:</b> Actively participated in the "Innovation for Tomorrow" community outreach program.</li>
+                </ul>
+
+                <div id="dynamicSections"></div>
+                <button class="add-section-btn" onclick="openSectionDialog()">+ Add New Section</button>
+            </div>
+        </div>
+
+        <!-- =========================================
+             RIGHT SIDE: AI CHATBOT PANEL
+             ========================================= -->
+        <div class="right-panel">
+            <div class="action-card">
+                <h3>🤖 Gemini AI Resume Assistant</h3>
+                <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Select a section and ask Gemini to improve it.</p>
+                
+                <p style="font-weight: 600; font-size: 14px; margin-bottom: 5px;">Select Resume Section</p>
+                <select id="sectionSelect" class="form-select">
+                    <option>Professional Summary</option>
+                    <option>Experience</option>
+                    <option>Education</option>
+                    <option>Additional Information</option>
+                </select>
+                
+                <div class="ai-chat-box" id="chatBox">
+                    <div class="chat-msg bot-msg">
+                        <b>Gemini</b><br>
+                        Hello 👋 Tell me about your resume section and I will make it professional and ATS-friendly.
+                    </div>
+                </div>
+                
+                <textarea id="prompt" class="form-textarea" placeholder="Speak or type your prompt..."></textarea>
+                
+                <div class="ai-button-group">
+                    <button class="btn btn-use" onclick="startListening()" style="flex-grow: 0; width: 50px;" title="Speak">🎤</button>
+                    <button class="btn btn-use" onclick="useCurrentSection()">Use Section Text</button>
+                    <button class="btn btn-word" onclick="askAI()">✨ Ask AI</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Section Modal -->
+    <div class="modal" id="sectionModal">
+        <div class="modal-card">
+            <h2 style="display: flex; justify-content: space-between;">Add Section <button onclick="closeSectionDialog()" style="background:none;border:none;font-size:24px;cursor:pointer;">&times;</button></h2>
+            <select id="newSection" class="form-select">
+                <option>Internships</option>
+                <option>Achievements</option>
+                <option>Projects</option>
+                <option>Publications</option>
+                <option>Volunteer Experience</option>
+            </select>
+            <button class="btn btn-word" style="width: 100%; margin-top: 15px;" onclick="addSection()">Add to Resume</button>
+        </div>
+    </div>
+
+    <script>
+        let counter = 0;
+        const $ = id => document.getElementById(id);
+
+        /* ==========================================
+           VOICE RECOGNITION AND TEXT-TO-SPEECH
+           ========================================== */
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = "en-US";
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = function() {
+                $('prompt').placeholder = "Listening... Speak now";
+            };
+
+            recognition.onresult = function(event) {
+                const text = event.results[0][0].transcript;
+                $('prompt').value = text;
+                $('prompt').placeholder = "Speak or type your prompt...";
+            };
+
+            recognition.onerror = function(event) {
+                alert("Voice Error: " + event.error);
+                $('prompt').placeholder = "Speak or type your prompt...";
+            };
+        }
+
+        function startListening() {
+            if (recognition) {
+                recognition.start();
+            } else {
+                alert("Speech Recognition is not supported in this browser.");
+            }
+        }
+
+        function speak(textStr) {
+            if ('speechSynthesis' in window) {
+                const cleanText = textStr.replace(/<[^>]*>?/gm, '');
+                const speech = new SpeechSynthesisUtterance(cleanText);
+                speech.lang = "en-US";
+                speech.rate = 1;
+                speech.pitch = 1;
+                window.speechSynthesis.speak(speech);
+            }
+        }
+
+        /* ==========================================
+           RESUME LOGIC
+           ========================================== */
+        function text(v) {
+            return v.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+        }
+
+        function changePhoto(e) {
+            const f = e.target.files[0];
+            if (!f) return;
+            const r = new FileReader();
+            r.onload = x => {
+                $('profilePhoto').src = x.target.result;
+                $('profilePhoto').style.display = 'block';
+                $('photoPlaceholder').style.display = 'none';
+            };
+            r.readAsDataURL(f);
+        }
+
+        function openSectionDialog() { $('sectionModal').style.display = 'flex'; }
+        function closeSectionDialog() { $('sectionModal').style.display = 'none'; }
+
+        function slug(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''); }
+
+        function addSection() {
+            const name = $('newSection').value;
+            const id = slug(name) + '_' + (++counter);
+
+            const wrap = document.createElement('div');
+            wrap.className = 'resume-section dynamic-section';
+            wrap.dataset.name = name;
+
+            wrap.innerHTML =
+                '<div class="section-heading-bs" contenteditable="true">' + name.toUpperCase() + '</div>' +
+                '<ul class="entry-bullets-bs dynamic-content" id="' + id + '" contenteditable="true"><li>Enter your ' + name.toLowerCase() + ' here.</li></ul>' +
+                '<button onclick="removeSection(this)" style="margin-top:5px; font-size:12px; color:red; cursor:pointer; background:none; border:none;">Remove Section</button>';
+
+            $('dynamicSections').appendChild(wrap);
+
+            const o = document.createElement('option');
+            o.value = name;
+            o.textContent = name;
+            o.dataset.target = id;
+
+            $('sectionSelect').appendChild(o);
+            closeSectionDialog();
+        }
+
+        function removeSection(b) {
+            const s = b.closest('.dynamic-section');
+            const name = s.dataset.name;
+
+            [...$('sectionSelect').options].forEach(o => {
+                if (o.value === name) o.remove();
+            });
+            s.remove();
+        }
+
+        function elementFor(name) {
+            const map = {
+                'Professional Summary': 'summary',
+                'Experience': 'experience',
+                'Education': 'education',
+                'Additional Information': 'skills'
+            };
+
+            if (map[name]) return $(map[name]);
+
+            for (const s of document.querySelectorAll('.dynamic-section')) {
+                if (s.dataset.name === name) return s.querySelector('.dynamic-content');
+            }
+            return null;
+        }
+
+        function useCurrentSection() {
+            const section = $('sectionSelect').value;
+            const element = elementFor(section);
+            $('prompt').value = text(element?.innerHTML || '');
+        }
+
+        async function askAI() {
+            const section = $('sectionSelect').value;
+            const msg = $('prompt').value.trim();
+
+            if (!msg) return alert('Please enter a prompt.');
+
+            $('chatBox').innerHTML += '<div class="chat-msg user-msg"><b>You</b><br>' + msg + '</div>';
+            $('chatBox').scrollTop = $('chatBox').scrollHeight;
+
+            try {
+                const r = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg, section: section })
+                });
+
+                const d = await r.json();
+                if (!r.ok) throw Error(d.response || 'AI request failed');
+
+                $('chatBox').innerHTML += '<div class="chat-msg bot-msg"><b>Gemini</b><br>' + d.response.replace(/\n/g, '<br>') + '</div>';
+                $('chatBox').scrollTop = $('chatBox').scrollHeight;
+                
+                speak(d.response);
+
+                const el = elementFor(section);
+                if (el) el.innerHTML = d.response.replace(/\n/g, '<br>');
+                
+                $('prompt').value = '';
+            } catch (e) {
+                alert('AI Error: ' + e.message);
+            }
+        }
+
+        function data() {
+            const d = {
+                name: text($('name').innerHTML),
+                jobTitle: "",
+                email: text($('email').innerHTML),
+                phone: text($('phone').innerHTML),
+                address: text($('address').innerHTML),
+                linkedin: text($('linkedin').innerHTML),
+                summary: text($('summary').innerHTML),
+                experience: text($('experience').innerHTML),
+                certifications: "",
+                education: text($('education').innerHTML),
+                skills: text($('skills').innerHTML),
+                languages: "",
+                photo: $('profilePhoto').src || ""
+            };
+
+            d.dynamicSections = [];
+            document.querySelectorAll('.dynamic-section').forEach(section => {
+                const sectionName = section.dataset.name;
+                const content = text(section.querySelector('.dynamic-content').innerHTML);
+                d.dynamicSections.push({ name: sectionName, content: content });
+            });
+
+            return d;
+        }
+
+        async function downloadResume(url) {
+            try {
+                const resumeData = data();
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(resumeData)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText);
+                }
+
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = downloadUrl;
+                a.download = url.includes("resume2_professional_pdf") ? "Professional_Resume.pdf" : "Professional_Resume.docx";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(downloadUrl);
+            } catch (error) {
+                console.error(error);
+                alert("Download Error: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

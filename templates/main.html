@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumefy</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    /* Background Image with smooth overlay */
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                url("{{ url_for('static', filename='images/back2.jpg') }}") no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+/* Header Styling */
+header {
+    background: linear-gradient(135deg, #1c27ee, #cb1cee);
+    color: white;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.logo img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+}
+
+.logo span {
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+}
+
+/* Right Header Actions Group */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: auto; /* Pushes the buttons group to the far right */
+}
+
+header a {
+    text-decoration: none;
+}
+
+/* Feedback Button */
+.feedback-btn {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.feedback-btn:hover {
+    background: white;
+    color: #1c27ee;
+}
+
+/* Logout Button */
+.btn-logout {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-logout:hover {
+    background: #bb2d3b;
+}
+
+/* Main Container */
+.container {
+    width: 90%;
+    margin: 50px auto;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #ffffff;
+    font-size: 32px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.cards {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.card {
+    width: 300px;
+    flex: 0 0 300px;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    transition: .3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+.card img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 20px;
+    text-align: center;
+}
+
+.card-body h3 {
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.card-body p {
+    color: #666;
+    font-size: 14px;
+}
+
+.btn {
+    display: inline-block;
+    background: #1c27ee;
+    color: white;
+    text-decoration: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    transition: .3s;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background: #0d6efd;
+}
+
+/* ==============================
+   RESUME CATEGORY
+   ============================== */
+
+.category-section {
+    text-align: center;
+    padding: 20px 20px 5px;
+}
+
+.category-section h2 {
+    color: white;
+    font-size: 22px;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+
+.category-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.category-btn {
+    border: 2px solid white;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    padding: 11px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.category-btn:hover {
+    background: white;
+    color: #2436f5;
+    transform: translateY(-2px);
+}
+
+.category-btn.active {
+    background: white;
+    color: #2436f5;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        <span>RESUMEFY</span>
+    </div>
+
+    <!-- Header Right Buttons -->
+    <div class="header-actions">
+        <a href="{{ url_for('feedback') }}">
+            <button class="feedback-btn">Feedback</button>
+        </a>
+
+        <button class="btn-logout" onclick="window.location.href='/logout'">
+            Logout
+        </button> 
+    </div>
+
+</header>
+####category buttons#####
+
+
+
+############
+
+<div class="container">
+
+    <h2>Select Resume Template</h2>
+
+    <div class="cards">
+
+        <!-- First Template -->
+        <div class="card">
+            <img src="{{ url_for('static', filename='images/card1.png') }}" alt="Plain Resume">
+            <div class="card-body">
+                <h3>Plain Resume</h3>
+                <p>Professional ATS Friendly Resume</p>
+                <br>
+                <a href="{{ url_for('index') }}" class="btn">Use Template</a>
+            </div>
+        </div>
+
+        <!-- Second Template -->
+        <div class="card">
+            <img src="{{ url_for('static', filename='images/card2.png') }}" alt="Professional Resume">
+            <div class="card-body">
+                <h3>Professional Resume</h3>
+                <p>Modern Two-Column Professional Resume</p>
+                <br>
+                <a href="{{ url_for('canva_editor') }}" class="btn">Use Template</a>
+            </div>
+        </div>
+
+        <!-- Third Template -->
+        <div class="card">
+            <img src="{{ url_for('static', filename='images/card3.png') }}" alt="Modern Resume">
+            <div class="card-body">
+                <h3>Modern Resume</h3>
+                <p>Modern Professional Resume</p>
+                <br>
+                <a href="{{ url_for('resume1') }}" class="btn">Use Template</a> 
+            </div>
+        </div>
+
+        <!-- Fourth Template -->
+        <div class="card">
+            <img src="{{ url_for('static', filename='images/card4.png') }}" alt="Multi column Resume">
+            <div class="card-body">
+                <h3>Modern Multi column Resume</h3>
+                <p>Modern Two-Column Professional Resume</p>
+                <br>
+                <a href="{{ url_for('resume2') }}" class="btn">Use Template</a> 
+            </div>
+        </div> 
+
+        <!-- Fifth Template -->
+        <div class="card">
+            <img src="{{ url_for('static', filename='images/card5.png') }}" alt="Single column Resume">
+            <div class="card-body">
+                <h3>Modern Single column Resume</h3>
+                <p>Modern Single Column Professional Resume</p>
+                <br>
+                <a href="{{ url_for('resume3') }}" class="btn">Use Template</a> 
+            </div>
+        </div>   
+
+    </div>
+
+</div>
+<script>
+
+function showCategory(category, button) {
+
+    // Get all category buttons
+    const buttons = document.querySelectorAll(".category-btn");
+
+    // Remove active from all buttons
+    buttons.forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    // Add active to clicked button
+    button.classList.add("active");
+
+    // Get all resume cards
+    const cards = document.querySelectorAll(".card");
+
+    // Show/hide cards
+    cards.forEach(card => {
+
+        if (card.dataset.category === category) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+
+    });
+}
+
+// Show Engineer templates when page loads
+window.onload = function() {
+
+    const firstButton = document.querySelector(".category-btn");
+
+    
+
+    showCategory("engineer", firstButton);
+
+
+};
+
+</script>
+
+</body>
+</html>

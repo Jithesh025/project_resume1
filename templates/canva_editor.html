@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+  <title>
+   Resumefy - Professional Template
+  </title>
+  <link href="{{ url_for('static', filename='css/canva_editor.css') }}" rel="stylesheet"/>
+ </head>
+ <body>
+  <header class="topbar">
+
+    <h1>
+        AI Resume Builder
+    </h1>
+
+    <div>
+
+        <button class="pdf"
+                onclick="downloadResume('/download/professional-pdf')">
+
+            Download PDF
+
+        </button>
+
+
+        <button class="word"
+                onclick="downloadResume('/download/professional-docx')">
+
+            Download Word (.docx)
+
+        </button>
+
+    </div>
+
+</header>
+  <main class="workspace">
+   <section class="resume-area">
+    <div class="resume" id="resume">
+     <div class="resume-main">
+      <div class="name-block">
+       <h2 contenteditable="true" id="name">
+        YOUR NAME
+       </h2>
+       <div class="job-title" contenteditable="true" id="jobTitle">
+        PROFESSIONAL TITLE
+       </div>
+      </div>
+      <section class="section">
+       <div class="section-title">
+        PROFESSIONAL SUMMARY
+       </div>
+       <div class="editable" contenteditable="true" id="summary">
+        Write a short professional summary about yourself, your experience, career goals and key strengths.
+       </div>
+      </section>
+      <section class="section">
+       <div class="section-title">
+        EXPERIENCE
+       </div>
+       <div class="entry">
+        <div class="entry-title" contenteditable="true">
+         JOB TITLE | COMPANY NAME
+        </div>
+        <div class="date" contenteditable="true">
+         2024 - Present
+        </div>
+        <div class="editable" contenteditable="true" id="experience">
+         &bull; Describe your responsibilities and achievements.
+         <br/>
+         &bull; Add measurable results where possible.
+         <br/>
+         &bull; Mention technologies, tools or processes used.
+        </div>
+       </div>
+      </section>
+      <section class="section">
+       <div class="section-title">
+        CERTIFICATIONS &amp; PROFESSIONAL DEVELOPMENT
+       </div>
+       <div class="editable" contenteditable="true" id="certifications">
+        &bull; Certification Name - Issuing Organization
+        <br/>
+        &bull; Professional Development Course
+        <br/>
+        &bull; Workshop / Training
+       </div>
+      </section>
+      <div id="dynamicSections">
+      </div>
+      <button class="add-section-btn" onclick="openSectionDialog()">
+       + Add Section
+      </button>
+     </div>
+     <aside class="resume-side">
+      <div class="photo-box">
+       <img alt="Profile Photo" id="profilePhoto"/>
+       <span id="photoPlaceholder">
+        PHOTO
+       </span>
+       <input accept="image/*" id="photoInput" onchange="changePhoto(event)" type="file"/>
+      </div>
+      <section class="side-section">
+       <div class="side-title">
+        CONTACT
+       </div>
+       <div class="contact-line" contenteditable="true" id="email">
+        ✉ your.email@gmail.com
+       </div>
+       <div class="contact-line" contenteditable="true" id="phone">
+        &phone; +91 9876543210
+       </div>
+       <div class="contact-line" contenteditable="true" id="address">
+        📍 Bangalore, India
+       </div>
+       <div class="contact-line" contenteditable="true" id="linkedin">
+        in linkedin.com/in/yourname
+       </div>
+      </section>
+      <section class="side-section">
+       <div class="side-title">
+        EDUCATION
+       </div>
+       <div class="editable" contenteditable="true" id="education">
+        <b>
+         Bachelor's Degree
+        </b>
+        <br/>
+        Computer Science
+        <br/>
+        University Name
+        <br/>
+        2022 - 2026
+       </div>
+      </section>
+      <section class="side-section">
+       <div class="side-title">
+        SKILLS
+       </div>
+       <div class="editable" contenteditable="true" id="skills">
+        Python
+        <br/>
+        Flask
+        <br/>
+        HTML / CSS
+        <br/>
+        JavaScript
+        <br/>
+        SQL
+        <br/>
+        Firebase
+       </div>
+      </section>
+      <section class="side-section">
+       <div class="side-title">
+        LANGUAGES
+       </div>
+       <div class="editable" contenteditable="true" id="languages">
+        English
+        <br/>
+        Kannada
+        <br/>
+        Hindi
+       </div>
+      </section>
+     </aside>
+    </div>
+   </section>
+   <aside class="assistant">
+    <h2>
+     🤖 Gemini AI Resume Assistant
+    </h2>
+    <p>
+     Select a section and ask Gemini to improve it.
+    </p>
+    <label>
+     Select Resume Section
+    </label>
+    <select id="sectionSelect">
+     <option>
+      Professional Summary
+     </option>
+     <option>
+      Experience
+     </option>
+     <option>
+      Education
+     </option>
+     <option>
+      Skills
+     </option>
+     <option>
+      Certifications
+     </option>
+     <option>
+      Languages
+     </option>
+    </select>
+    <div class="chat-box" id="chatBox">
+     <div class="gemini">
+      <b>
+       Gemini
+      </b>
+      <p>
+       Hello 👋 Tell me about your resume section and I will make it professional and ATS-friendly.
+      </p>
+     </div>
+    </div>
+    <textarea id="prompt" placeholder="Speak or type your prompt..."></textarea>
+    <div class="ai-buttons">
+     <button onclick="useCurrentSection()">
+      Use Section
+     </button>
+     <button onclick="askAI()">
+      ✨ Ask AI
+     </button>
+    </div>
+   </aside>
+  </main>
+  <div class="modal" id="sectionModal">
+   <div class="modal-card">
+    <button class="close" onclick="closeSectionDialog()">
+     &times;
+    </button>
+    <h2>
+     Add Resume Section
+    </h2>
+    <select id="newSection">
+     <option>
+      Professional Experience
+     </option>
+     <option>
+      Internships
+     </option>
+     <option>
+      Achievements
+     </option>
+     <option>
+      Awards
+     </option>
+     <option>
+      Projects
+     </option>
+     <option>
+      Publications
+     </option>
+     <option>
+      Volunteer Experience
+     </option>
+     <option>
+      Interests
+     </option>
+     <option>
+      Strengths
+     </option>
+     <option>
+      Career Objective
+     </option>
+     <option>
+      References
+     </option>
+    </select>
+    <button class="add-confirm" onclick="addSection()">
+     Add Section
+    </button>
+   </div>
+  </div>
+  <script>
+   let counter = 0;
+
+const $ = id => document.getElementById(id);
+
+function text(v) {
+    return v
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .trim();
+}
+
+function changePhoto(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+
+    const r = new FileReader();
+    r.onload = x => {
+        $('profilePhoto').src = x.target.result;
+        $('profilePhoto').style.display = 'block';
+        $('photoPlaceholder').style.display = 'none';
+    };
+
+    r.readAsDataURL(f);
+}
+
+function openSectionDialog() {
+    $('sectionModal').style.display = 'flex';
+}
+
+function closeSectionDialog() {
+    $('sectionModal').style.display = 'none';
+}
+
+function slug(s) {
+    return s
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_|_$/g, '');
+}
+
+function addSection() {
+    const name = $('newSection').value;
+    const id = slug(name) + '_' + (++counter);
+
+    const wrap = document.createElement('section');
+    wrap.className = 'section dynamic-section';
+    wrap.dataset.name = name;
+
+    wrap.innerHTML =
+        '<div class="section-title">' + name.toUpperCase() + '</div>' +
+        '<div class="editable dynamic-content" id="' + id + '" contenteditable="true">' +
+        'Enter your ' + name.toLowerCase() + ' here.' +
+        '</div>' +
+        '<button class="remove-section" onclick="removeSection(this)">Remove</button>';
+
+    $('dynamicSections').appendChild(wrap);
+
+    const o = document.createElement('option');
+    o.value = name;
+    o.textContent = name;
+    o.dataset.target = id;
+
+    $('sectionSelect').appendChild(o);
+    closeSectionDialog();
+}
+
+function removeSection(b) {
+    const s = b.closest('.dynamic-section');
+    const name = s.dataset.name;
+
+    [...$('sectionSelect').options].forEach(o => {
+        if (o.value === name) {
+            o.remove();
+        }
+    });
+
+    s.remove();
+}
+
+function elementFor(name) {
+    const map = {
+        'Professional Summary': 'summary',
+        'Experience': 'experience',
+        'Education': 'education',
+        'Skills': 'skills',
+        'Certifications': 'certifications',
+        'Languages': 'languages'
+    };
+
+    if (map[name]) {
+        return $(map[name]);
+    }
+
+    for (const s of document.querySelectorAll('.dynamic-section')) {
+        if (s.dataset.name === name) {
+            return s.querySelector('.dynamic-content');
+        }
+    }
+
+    return null;
+}
+
+function useCurrentSection() {
+    const section = $('sectionSelect').value;
+    const element = elementFor(section);
+
+    $('prompt').value = text(element?.innerHTML || '');
+}
+
+async function askAI() {
+    const section = $('sectionSelect').value;
+    const msg = $('prompt').value.trim();
+
+    if (!msg) {
+        return alert('Please enter a prompt.');
+    }
+
+    $('chatBox').innerHTML +=
+        '<div class="user"><b>You</b><p>' + msg + '</p></div>';
+
+    try {
+        const r = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: msg,
+                section: section
+            })
+        });
+
+        const d = await r.json();
+
+        if (!r.ok) {
+            throw Error(d.response || 'AI request failed');
+        }
+
+        $('chatBox').innerHTML +=
+            '<div class="gemini"><b>Gemini</b><p>' +
+            d.response.replace(/\n/g, '<br>') +
+            '</p></div>';
+
+        const el = elementFor(section);
+
+        if (el) {
+            el.innerHTML = d.response.replace(/\n/g, '<br>');
+        }
+
+        $('prompt').value = '';
+    } catch (e) {
+        alert('AI Error: ' + e.message);
+    }
+}
+
+function data() {
+
+    const d = {
+
+        name: text($('name').innerHTML),
+
+        jobTitle: text($('jobTitle').innerHTML),
+
+        email: text($('email').innerHTML),
+
+        phone: text($('phone').innerHTML),
+
+        address: text($('address').innerHTML),
+
+        linkedin: text($('linkedin').innerHTML),
+
+        summary: text($('summary').innerHTML),
+
+        experience: text($('experience').innerHTML),
+
+        certifications: text($('certifications').innerHTML),
+
+        education: text($('education').innerHTML),
+
+        skills: text($('skills').innerHTML),
+
+        languages: text($('languages').innerHTML),
+
+        photo: $('profilePhoto').src || ""
+
+    };
+
+
+    // Store dynamically added sections
+
+    d.dynamicSections = [];
+
+
+    document.querySelectorAll('.dynamic-section').forEach(section => {
+
+        const sectionName = section.dataset.name;
+
+        const content =
+            text(section.querySelector('.dynamic-content').innerHTML);
+
+        d.dynamicSections.push({
+
+            name: sectionName,
+
+            content: content
+
+        });
+
+    });
+
+
+    return d;
+
+}
+async function downloadResume(url) {
+
+    try {
+
+        const resumeData = data();
+
+        const response = await fetch(url, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(resumeData)
+
+        });
+
+
+        if (!response.ok) {
+
+            const errorText = await response.text();
+
+            throw new Error(errorText);
+
+        }
+
+
+        const blob = await response.blob();
+
+        const downloadUrl =
+            window.URL.createObjectURL(blob);
+
+
+        const a = document.createElement("a");
+
+        a.href = downloadUrl;
+
+
+        if (url.includes("professional-pdf")) {
+
+            a.download = "Professional_Resume.pdf";
+
+        } else {
+
+            a.download = "Professional_Resume.docx";
+
+        }
+
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+
+        window.URL.revokeObjectURL(downloadUrl);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert("Download Error: " + error.message);
+
+    }
+
+}
+  </script>
+ </body>
+</html>

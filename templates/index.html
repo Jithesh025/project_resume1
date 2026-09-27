@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Resumefy | AI Resume Builder</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background: linear-gradient(
+                135deg,
+                #eef2ff,
+                #ffffff,
+                #e8edff
+            );
+        }
+
+        .container {
+            width: 90%;
+            max-width: 850px;
+
+            background: white;
+
+            text-align: center;
+
+            padding: 55px 40px;
+
+            border-radius: 25px;
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        /* RESUMEFY LOGO */
+
+        .logo {
+            width: 130px;
+            height: 130px;
+
+            object-fit: contain;
+
+            margin: 0 auto 20px;
+
+            display: block;
+        }
+
+        /* BRAND NAME */
+
+        .brand {
+            font-size: 42px;
+            font-weight: bold;
+
+            color: #1c27ee;
+
+            margin-bottom: 15px;
+        }
+
+        /* MAIN GREETING */
+
+        h1 {
+            font-size: 30px;
+
+            color: #222;
+
+            margin-bottom: 15px;
+        }
+
+        /* DESCRIPTION */
+
+        .description {
+            max-width: 650px;
+
+            margin: auto;
+
+            font-size: 17px;
+
+            line-height: 1.7;
+
+            color: #666;
+
+            margin-bottom: 35px;
+        }
+
+        /* FEATURES */
+
+        .features {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+
+            margin-bottom: 35px;
+        }
+
+        .feature {
+            background: #f3f5ff;
+
+            padding: 15px 20px;
+
+            border-radius: 12px;
+
+            font-size: 14px;
+
+            color: #333;
+        }
+
+        /* GET STARTED BUTTON */
+
+        .get-started {
+            display: inline-block;
+
+            padding: 15px 40px;
+
+            background: #1c27ee;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 10px;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            transition: 0.3s;
+        }
+
+        .get-started:hover {
+            background: #0d6efd;
+
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 8px 20px rgba(28, 39, 238, 0.25);
+        }
+
+        /* FOOTER */
+
+        .footer {
+            margin-top: 30px;
+
+            color: #999;
+
+            font-size: 13px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+
+            .container {
+                padding: 40px 20px;
+            }
+
+            .logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .brand {
+                font-size: 34px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .description {
+                font-size: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- RESUMEFY LOGO -->
+
+    <img
+        src="{{ url_for('static', filename='images/resumelogo.png') }}"
+        alt="Resumefy Logo"
+        class="logo"
+    >
+
+
+    <!-- BRAND NAME -->
+
+    <div class="brand">
+
+        RESUMEFY
+
+    </div>
+
+
+    <!-- GREETING -->
+
+    <h1>
+
+        Welcome to Resumefy! 👋
+
+    </h1>
+
+
+    <p class="description">
+
+        Build your professional and ATS-friendly resume
+        with the power of Artificial Intelligence.
+
+        Choose a modern template, improve your resume
+        content using AI, and download your resume
+        in PDF or Word format.
+
+    </p>
+
+
+    <!-- FEATURES -->
+
+    <div class="features">
+
+        <div class="feature">
+            📄 Resume Templates
+        </div>
+
+        <div class="feature">
+            🤖 AI Resume Assistant
+        </div>
+
+        <div class="feature">
+            📥 PDF & Word Download
+        </div>
+
+    </div>
+
+
+    <!-- GET STARTED -->
+
+    <a
+        href="{{ url_for('login') }}"
+        class="get-started"
+    >
+
+        Get Started →
+
+    </a>
+
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+
+        Create. Improve. Succeed.
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>
